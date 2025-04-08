@@ -5,6 +5,13 @@ variable "region" {
 }
 
 # redshift cluster variables
+
+variable "create_redshift_cluster" {
+    description = "a variable of type bool"
+    type        = bool
+    default     = null
+}
+
 variable cluster_identifier {
     description = "a variable of type string"
     type = string

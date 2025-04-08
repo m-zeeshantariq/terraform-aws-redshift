@@ -14,6 +14,7 @@ provider "aws" {
 
 # Create a redshift cluster
 resource "aws_redshift_cluster" "redshift" {
+  count              = var.create_redshift_cluster ? 1 : 0
   cluster_identifier = var.cluster_identifier
   database_name      = var.database_name
   master_username    = var.master_username
