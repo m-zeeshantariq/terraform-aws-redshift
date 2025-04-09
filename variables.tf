@@ -103,12 +103,6 @@ variable "automated_snapshot_retention_period" {
   default     = null
 }
 
-variable "maintenance_window" {
-  description = "a variable of type string"
-  type        = string
-  default     = null
-}
-
 variable "snapshot_schedule" {
   description = "a variable of type string"
   type        = string
@@ -122,8 +116,8 @@ variable "cluster_parameter_group_name" {
 }
 
 variable "default_iam_role_arn" {
-  description = "a variable of type list"
-  type        = list(any)
+  description = "a variable of type string"
+  type        = string
   default     = null
 }
 
@@ -148,12 +142,6 @@ variable "master_password_secret_kms_key_id" {
 variable "multi_az" {
   description = "a variable of type bool"
   type        = bool
-  default     = null
-}
-
-variable "vpc_security_group_ids" {
-  description = "a variable of type list"
-  type        = list(any)
   default     = null
 }
 
@@ -236,8 +224,8 @@ variable "owner_account" {
 }
 
 variable "iam_roles" {
-  description = "a variable of type string"
-  type        = string
+  description = "a variable of type set"
+  type        = set(any)
   default     = null
 }
 
@@ -248,8 +236,8 @@ variable "maintenance_track_name" {
 }
 
 variable "manual_snapshot_retention_period" {
-  description = "a variable of type string"
-  type        = string
+  description = "a variable of type number"
+  type        = number
   default     = null
 }
 
@@ -278,8 +266,8 @@ variable "log_destination_type" {
 }
 
 variable "log_exports" {
-  description = "a variable of type list"
-  type        = list(any)
+  description = "a variable of type set"
+  type        = set(any)
   default     = null
 }
 
@@ -296,6 +284,18 @@ variable "retention_period" {
 }
 
 variable "grant_name" {
+  description = "a variable of type string"
+  type        = string
+  default     = null
+}
+
+variable "definitions" {
+  description = "a variable of type list"
+  type        = list(any)
+  default     = null
+}
+
+variable "snapshot_copy_grant_name" {
   description = "a variable of type string"
   type        = string
   default     = null

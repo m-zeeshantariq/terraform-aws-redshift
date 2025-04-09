@@ -30,16 +30,11 @@ resource "aws_redshift_cluster" "redshift" {
   kms_key_id                          = var.kms_key_id
   enhanced_vpc_routing                = var.enhanced_vpc_routing
   cluster_subnet_group_name           = var.cluster_subnet_group_name
-  iam_role_arns                       = var.iam_role_arns
   vpc_security_group_ids              = var.vpc_security_group_ids
   automated_snapshot_retention_period = var.automated_snapshot_retention_period
-  maintenance_window                  = var.maintenance_window
-  snapshot_schedule                   = var.snapshot_schedule
   cluster_parameter_group_name        = var.cluster_parameter_group_name
 
   default_iam_role_arn                 = var.default_iam_role_arn
-  master_password_wo                   = var.master_password_wo
-  master_password_wo_version           = var.master_password_wo_version
   master_password_secret_kms_key_id    = var.master_password_secret_kms_key_id
   multi_az                             = var.multi_az
   availability_zone                    = var.availability_zone
@@ -59,11 +54,44 @@ resource "aws_redshift_cluster" "redshift" {
   maintenance_track_name               = var.maintenance_track_name
   manual_snapshot_retention_period     = var.manual_snapshot_retention_period
   tags                                 = var.tags
-  bucket_name                          = var.bucket_name
-  s3_key_prefix                        = var.s3_key_prefix
-  log_destination_type                 = var.log_destination_type
-  log_exports                          = var.log_exports
-  destination_region                   = var.destination_region
-  retention_period                     = var.retention_period
-  grant_name                           = var.grant_name
+}
+
+# iam roles
+
+resource "aws_redshift_cluster_iam_roles" "cluster_iam_role" {
+  count              = var.create_redshift_cluster ? 1 : 0
+  cluster_identifier = aws_redshift_cluster.redshift[count.index].cluster_identifier
+  iam_role_arns      = var.iam_role_arns
+}
+
+
+# snapshot schedule
+
+resource "aws_redshift_snapshot_schedule" "default" {
+  count       = var.create_redshift_cluster ? 1 : 0
+  identifier  = aws_redshift_cluster.redshift[count.index].cluster_identifier
+  definitions = var.definitions
+}
+
+
+# redshift auditing
+
+resource "aws_redshift_logging" "redshiftauditlogging" {
+  count                = var.create_redshift_cluster ? 1 : 0
+  cluster_identifier   = aws_redshift_cluster.redshift[count.index].cluster_identifier
+  log_destination_type = "s3"
+  bucket_name          = var.bucket_name
+  s3_key_prefix        = var.s3_key_prefix
+  log_exports          = var.log_exports
+}
+
+# redshift snapshot copy
+
+resource "aws_redshift_snapshot_copy" "redshift_snapshot_copy" {
+  count                            = var.create_redshift_cluster ? 1 : 0
+  cluster_identifier               = aws_redshift_cluster.redshift[count.index].cluster_identifier
+  destination_region               = var.destination_region
+  manual_snapshot_retention_period = var.manual_snapshot_retention_period
+  retention_period                 = var.retention_period
+  snapshot_copy_grant_name         = var.grant_name
 }
